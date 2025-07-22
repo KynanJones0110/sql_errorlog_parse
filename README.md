@@ -1,0 +1,1 @@
+Quickly parses a load of ERRORLOG found in MSSQL logs C:\Program Files\Microsoft SQL Server\MSSQLXX.<InstanceName>\MSSQL\Log\ERRORLOG, - review the log to see what auditing is enabled prior, as you may want to adjust the 'hit' strings in the script
