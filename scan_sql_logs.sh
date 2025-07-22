@@ -1,16 +1,19 @@
 #!/bin/bash
 
-LOG_DIR="/mnt/c/path/ok/error_log"
+LOG_DIR="/mnt/c/xxx-xx/error_log"
 OUTPUT_FILE="log.txt"
+TMP_FILE="tmp_all_matches.txt"
 KEYWORDS="xp_cmdshell|EXEC|sp_configure|RECONFIGURE|Login failed|Login succeeded"
-
-echo "Scanning logs in $LOG_DIR for suspicious SQL Server activity..." | tee "$OUTPUT_FILE"
+echo "Scanning logs in $LOG_DIR for suspicious SQL Server activity..."
+> "$TMP_FILE"
 
 for log in "$LOG_DIR"/ERRORLOG*; do
-    echo -e "\n--- Scanning $log ---" | tee -a "$OUTPUT_FILE"
-    iconv -f UTF-16 -t UTF-8 "$log" | grep -iE -C 2 "$KEYWORDS" | tee -a "$OUTPUT_FILE"
-    echo "----- End of matches in $log -----" | tee -a "$OUTPUT_FILE"
+    echo "Scanning $log ..."
+    # Convert encoding (as init utf-16)
+    iconv -f UTF-16 -t UTF-8 "$log" | grep -iE "$KEYWORDS" >> "$TMP_FILE"
 done
 
-echo "Scan complete." | tee -a "$OUTPUT_FILE"
-
+# Assuming timestamp format at line start: e.g. "2025-07-22 09:53:05 ..."
+sort "$TMP_FILE" > "$OUTPUT_FILE"
+echo "Scan complete. Results saved to $OUTPUT_FILE"
+rm "$TMP_FILE"
